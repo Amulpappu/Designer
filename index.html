@@ -222,13 +222,27 @@
 </section>
 
 <section class="fade-in">
-  <h2>Contact</h2>
-  <p>Email: <a href="mailto:lohithgamer12@gmail.com">lohithgamer12@gmail.com</a></p>
-  <p>
-    Instagram: <a href="https://www.instagram.com/lohith_x/" target="_blank">@lohith_x</a><br>
-    GitHub: <a href="https://github.com/Amulpappu" target="_blank">github.com/Amulpappu</a><br>
-    LinkedIn: <a href="https://www.linkedin.com/in/lohith-undefined-b1331a3a8/" target="_blank">View Profile</a>
-  </p>
+  <h2>📩 Contact Me</h2>
+  <div class="grid">
+    <div class="card">
+      <form onsubmit="event.preventDefault(); sendMessage();">
+        <input id="cname" type="text" placeholder="Your Name" required style="width:100%;padding:12px;margin-bottom:12px;border-radius:8px;border:1px solid red;background:black;color:red;">
+        <input id="cemail" type="email" placeholder="Your Email" required style="width:100%;padding:12px;margin-bottom:12px;border-radius:8px;border:1px solid red;background:black;color:red;">
+        <textarea id="cmsg" rows="4" placeholder="Your Message" required style="width:100%;padding:12px;margin-bottom:12px;border-radius:8px;border:1px solid red;background:black;color:red;"></textarea>
+        <button class="btn" type="submit">Send Message</button>
+      </form>
+      <p id="form-status" style="margin-top:10px;color:#4ade80;display:none;">Message sent successfully ✔</p>
+    </div>
+    <div class="card">
+      <h3>Direct Contact</h3>
+      <p>Email: <a href="mailto:lohithgamer12@gmail.com">lohithgamer12@gmail.com</a></p>
+      <p>
+        Instagram: <a href="https://www.instagram.com/lohith_x/" target="_blank">@lohith_x</a><br>
+        GitHub: <a href="https://github.com/Amulpappu" target="_blank">github.com/Amulpappu</a><br>
+        LinkedIn: <a href="https://www.linkedin.com/in/lohith-undefined-b1331a3a8/" target="_blank">View Profile</a>
+      </p>
+    </div>
+  </div>
 </section>
 
 <footer>
@@ -382,6 +396,14 @@
   
 
     
+
+    // Contact form handler
+  function sendMessage(){
+    document.getElementById('form-status').style.display='block';
+    document.getElementById('cname').value='';
+    document.getElementById('cemail').value='';
+    document.getElementById('cmsg').value='';
+  }
 
   // Real AI bot hook (OpenAI API placeholder)
   async function askAI(q){return 'Connect OpenAI API key here to enable real ChatGPT replies.'}
