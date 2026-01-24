@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portfolio</title>
+  <style>
+    /* Loading screen */
+    #loader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#000;}
+    #loader span{font-size:24px;letter-spacing:4px;color:#ff1a1a;animation:pulse 1.2s infinite alternate;}
+    @keyframes pulse{from{opacity:.3}to{opacity:1}}
+
+    /* Cyber grid background */
+    body:before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,0,0,.05) 1px, transparent 1px),linear-gradient(90deg, rgba(255,0,0,.05) 1px, transparent 1px);background-size:40px 40px;pointer-events:none;animation:gridMove 20s linear infinite;}
+    @keyframes gridMove{from{transform:translateY(0)}to{transform:translateY(40px)}}
+
+    /* Cyber custom cursor */
+    body{cursor:none;}
+    #cursor{position:fixed;width:18px;height:18px;border:2px solid red;border-radius:50%;pointer-events:none;box-shadow:0 0 20px red;transform:translate(-50%,-50%);z-index:10000;}
+
+    /* Matrix rain canvas */
+    #matrix{position:fixed;inset:0;z-index:-2;background:black;}
+
+    /* Neon cursor trail */
+    .trail{position:fixed;width:6px;height:6px;border-radius:50%;background:red;pointer-events:none;filter:blur(2px);}
+
+    /* 3D tilt cards */
+    .card{transform-style:preserve-3d;}
+
+
+    body {
+      background-attachment: fixed;
+      overflow-x: hidden;
+
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at top, #120101, #000000 70%), linear-gradient(135deg, #7f1d1d, #000000);
+      color: #fff;
+    }
+    header {
+      text-align: center;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #120101, #3f0000, #000000);
+    }
+    header h1 {
+      font-size: 48px;
+      margin: 0;
+      letter-spacing: 2px;
+    }
+    header p {
+      font-size: 18px;
+      color: #cbd5f5;
+      margin-top: 10px;
+    }
+    section {
+      max-width: 1100px;
+      margin: auto;
+      padding: 60px 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,0,0,0.15);
+      background: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      padding: 24px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .card:hover {
+      box-shadow: 0 0 25px rgba(255,0,0,0.6), 0 0 60px rgba(255,0,0,0.25);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .card h3 {
+      margin-top: 0;
+      font-size: 22px;
+    }
+    footer {
+      border-top: 1px solid rgba(255,0,0,0.25);
+      text-align: center;
+      padding: 30px 20px;
+      background: #020617;
+      color: #94a3b8;
+    }
+    .btn {
+      box-shadow: 0 0 20px rgba(255,0,0,0.6);
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 26px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ef4444, #fb7185);
+      color: #000;
+      font-weight: 600;
+      text-decoration: none;
+    }
+      /* Smooth fade + slide animations */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeUp 1s ease forwards;
+    }
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    header h1 { animation: fadeUp 1s ease forwards; }
+    header p { animation: fadeUp 1.2s ease forwards; }
+    header .btn { animation: fadeUp 1.4s ease forwards; }
+
+    section { opacity: 0; transform: translateY(40px); transition: all 0.8s ease; }
+    section.show { opacity: 1; transform: translateY(0); }
+      /* Cinematic intro overlay */
+    #intro{position:fixed;inset:0;z-index:9000;background:radial-gradient(circle at center,#300000,#000);display:flex;align-items:center;justify-content:center;animation:introFade 3s ease forwards;}
+    #intro h1{font-size:48px;letter-spacing:6px;color:#ff1a1a;text-shadow:0 0 20px red;animation:glitch 1s infinite alternate;}
+    @keyframes introFade{0%{opacity:1}70%{opacity:1}100%{opacity:0;pointer-events:none}}
+    @keyframes glitch{0%{transform:skewX(0)}50%{transform:skewX(3deg)}100%{transform:skewX(-3deg)}}
+
+    /* Parallax layers */
+    .parallax{position:relative;overflow:hidden;}
+    .layer{position:absolute;inset:0;will-change:transform;}
+
+    /* Particle canvas */
+    #particles{position:fixed;inset:0;z-index:-1;}
+      /* Terminal UI */
+    #terminal{position:fixed;left:20px;bottom:20px;width:280px;background:rgba(0,0,0,.8);border:1px solid red;border-radius:10px;padding:10px;font-family:monospace;box-shadow:0 0 20px rgba(255,0,0,.5);}
+    #term-output{height:120px;overflow:auto;font-size:13px;color:#ff4d4d;margin-bottom:6px;}
+    #term-input{width:100%;background:black;border:1px solid red;color:red;padding:6px;border-radius:6px;}
+
+    /* Chatbot */
+    #chatbot{position:fixed;right:20px;bottom:80px;width:260px;background:rgba(0,0,0,.8);border:1px solid red;border-radius:12px;box-shadow:0 0 25px rgba(255,0,0,.6);display:flex;flex-direction:column;}
+    #chat-messages{flex:1;padding:10px;overflow:auto;font-size:13px;}
+    #chat-messages .bot{color:#ff6b6b;margin-bottom:6px;}
+    #chat-messages .user{color:#fff;text-align:right;margin-bottom:6px;}
+    #chat-input{border:none;border-top:1px solid red;background:black;color:red;padding:8px;border-radius:0 0 12px 12px;}
+
+    /* WASD effect */
+    body.move-left{transform:translateX(10px)}
+    body.move-right{transform:translateX(-10px)}
+    body.move-up{transform:translateY(10px)}
+    body.move-down{transform:translateY(-10px)}
+      
+  </style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<canvas id="particles"></canvas>
+<div id="cursor"></div>
+<div id="intro"><h1>WELCOME</h1></div>
+<div id="loader"><span>INITIALIZING SYSTEM...</span></div>
+
+
+
+<header>
+  <h1>K. Lohith</h1>
+  <p>Student • Gamer • Developer • Designer</p>
+  
+</header>
+
+<section class="fade-in">
+  <h2>🎮 Gaming Profile & Stats</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Gamer Tag</h3>
+      <p><b>AMULPAPPU</b></p>
+    </div>
+    <div class="card">
+      <h3>Platforms</h3>
+      <p>PC • Steam • FiveM • Android</p>
+    </div>
+    <div class="card">
+      <h3>Top Games</h3>
+      <p>GTA V / FiveM • Valorant • PUBG • Minecraft</p>
+    </div>
+    <div class="card">
+      <h3>Play Style</h3>
+      <p>Competitive • Roleplay • Open World • FPS</p>
+    </div>
+    <div class="card">
+      <h3>Experience</h3>
+      <p>5+ Years Gaming</p>
+    </div>
+    <div class="card">
+      <h3>Role & Rank</h3>
+      <p>Police RP • Commander</p>
+    </div>
+    <div class="card">
+      <h3>Steam Profile</h3>
+      <p><a href="https://steamcommunity.com/profiles/76561199497363742/" target="_blank">steamcommunity.com/profiles/76561199497363742</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="fade-in">
+  <h2>🕹️ Live Discord & Steam Status</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>🟢 Discord Presence</h3>
+      <img src="https://lanyard.cnrad.dev/api/873259272169984070?theme=dark&bg=000000&animated=true" width="100%" style="border-radius:12px">
+      <p style="font-size:12px;opacity:0.7">(Replace DISCORD_ID with your user ID)</p>
+    </div>
+    <div class="card">
+      <h3>🔴 Steam Live Status</h3>
+      <img src="https://steam-status.vercel.app/api/status?steamid=76561199497363742" width="100%" style="border-radius:12px">
+      <p style="font-size:12px;opacity:0.7">Shows online / in‑game status</p>
+    </div>
+    <div class="card">
+      <h3>🎮 Currently Playing</h3>
+      <img src="https://steam-status.vercel.app/api/playing?steamid=76561199497363742" width="100%" style="border-radius:12px">
+      <p style="font-size:12px;opacity:0.7">Auto‑detects live game</p>
+    </div>
+  </div>
+</section>
+
+<section class="fade-in">
+  <h2>Contact</h2>
+  <p>Email: <a href="mailto:lohithgamer12@gmail.com">lohithgamer12@gmail.com</a></p>
+  <p>
+    Instagram: <a href="https://www.instagram.com/lohith_x/" target="_blank">@lohith_x</a><br>
+    GitHub: <a href="https://github.com/Amulpappu" target="_blank">github.com/Amulpappu</a><br>
+    LinkedIn: <a href="https://www.linkedin.com/in/lohith-undefined-b1331a3a8/" target="_blank">View Profile</a>
+  </p>
+</section>
+
+<footer>
+  © 2026 K. Lohith • Portfolio • Designed with ❤️
+</footer>
+
+<!-- Terminal UI -->
+<div id="terminal">
+  <div id="term-output">SYSTEM READY. Type <b>help</b></div>
+  <input id="term-input" placeholder=">" autocomplete="off" />
+</div>
+
+<!-- Chatbot -->
+<div id="chatbot">
+  <div id="chat-messages"><div class="bot">Hi 👋 I am your AI assistant.</div></div>
+  <input id="chat-input" placeholder="Ask something..." />
+</div>
+
+
+<script>
+  const sections = document.querySelectorAll('section');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('show');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  sections.forEach(section => observer.observe(section));
+</script>
+
+
+<script>
+  // Hide loader
+  window.addEventListener('load',()=>{document.getElementById('loader').style.display='none';});
+
+  // Neon cursor trail
+  document.addEventListener('mousemove',e=>{
+    const dot=document.createElement('div');
+    dot.className='trail';
+    dot.style.left=e.clientX+'px';
+    dot.style.top=e.clientY+'px';
+    document.body.appendChild(dot);
+    setTimeout(()=>dot.remove(),500);
+  });
+
+  // 3D tilt effect
+  document.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const x=e.clientX-r.left;
+      const y=e.clientY-r.top;
+      const rx=(y/r.height-.5)*12;
+      const ry=(x/r.width-.5)*12;
+      card.style.transform=`rotateX(${ -rx }deg) rotateY(${ ry }deg) scale(1.03)`;
+    });
+    card.addEventListener('mouseleave',()=>{
+      card.style.transform='rotateX(0) rotateY(0) scale(1)';
+    });
+  });
+  // Parallax scroll
+  window.addEventListener('scroll',()=>{
+    const s=window.scrollY;
+    document.body.style.backgroundPosition=`center ${s*0.3}px`;
+  });
+
+  // Cyber background sound toggle
+  const audio=new Audio('https://assets.mixkit.co/sfx/preview/mixkit-futuristic-ambience-2503.mp3');
+  audio.loop=true;
+  const btn=document.createElement('button');
+  btn.innerText='🔊';
+  btn.style.cssText='position:fixed;bottom:20px;right:20px;background:#000;border:1px solid red;color:red;padding:10px 14px;border-radius:50%;cursor:pointer;box-shadow:0 0 15px red;z-index:9999';
+  document.body.appendChild(btn);
+  let playing=false;
+  btn.onclick=()=>{playing?audio.pause():audio.play();playing=!playing;btn.innerText=playing?'🔇':'🔊';};
+
+  // Particle effect
+  const c=document.getElementById('particles');
+  const ctx=c.getContext('2d');
+  function resize(){c.width=innerWidth;c.height=innerHeight}
+  resize();addEventListener('resize',resize);
+  const p=Array.from({length:80},()=>({x:Math.random()*c.width,y:Math.random()*c.height,v:0.5+Math.random()}));
+  function draw(){ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle='rgba(255,0,0,.6)';p.forEach(o=>{o.y+=o.v;if(o.y>c.height)o.y=0;ctx.fillRect(o.x,o.y,2,2)});requestAnimationFrame(draw)}
+  draw();
+
+  // WASD keyboard interaction
+  document.addEventListener('keydown',e=>{
+    if(e.key==='a')document.body.classList.add('move-left');
+    if(e.key==='d')document.body.classList.add('move-right');
+    if(e.key==='w')document.body.classList.add('move-up');
+    if(e.key==='s')document.body.classList.add('move-down');
+  });
+  document.addEventListener('keyup',()=>document.body.className='');
+
+  // Terminal commands
+  const termOut=document.getElementById('term-output');
+  const termIn=document.getElementById('term-input');
+  termIn.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      const v=termIn.value.toLowerCase();
+      let r='Command not found';
+      if(v==='help') r='Commands: about, skills, clear';
+      if(v==='about') r='Student | Gamer | Developer';
+      if(v==='skills') r='HTML CSS JS Python';
+      
+      if(v==='clear'){termOut.innerHTML=''; termIn.value=''; return;}
+      termOut.innerHTML+=`<div>> ${v}</div><div>${r}</div>`;
+      termIn.value=''; termOut.scrollTop=termOut.scrollHeight;
+    }
+  });
+
+  // Simple chatbot
+  const chatInput=document.getElementById('chat-input');
+  const chatBox=document.getElementById('chat-messages');
+  chatInput.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){
+      const msg=chatInput.value;
+      chatBox.innerHTML+=`<div class='user'>${msg}</div>`;
+      chatBox.innerHTML+=`<div class='bot'>I am a demo AI 🤖. Connect real AI API to upgrade.</div>`;
+      chatInput.value=''; chatBox.scrollTop=chatBox.scrollHeight;
+    }
+  });
+  // Cyber custom cursor
+  const cursor=document.getElementById('cursor');
+  document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';});
+
+  // Matrix rain effect
+  const m=document.getElementById('matrix');
+  const mtx=m.getContext('2d');
+  function mresize(){m.width=innerWidth;m.height=innerHeight}
+  mresize();addEventListener('resize',mresize);
+  const letters='01';
+  const fontSize=16;
+  let cols=Math.floor(m.width/fontSize);
+  let drops=Array(cols).fill(1);
+  function matrix(){
+    mtx.fillStyle='rgba(0,0,0,0.08)';
+    mtx.fillRect(0,0,m.width,m.height);
+    mtx.fillStyle='red';
+    mtx.font=fontSize+'px monospace';
+    for(let i=0;i<drops.length;i++){
+      const text=letters[Math.floor(Math.random()*letters.length)];
+      mtx.fillText(text,i*fontSize,drops[i]*fontSize);
+      if(drops[i]*fontSize>m.height && Math.random()>0.95) drops[i]=0;
+      drops[i]++;
+    }
+  }
+  setInterval(matrix,50);
+
+  
+
+    
+
+  // Real AI bot hook (OpenAI API placeholder)
+  async function askAI(q){return 'Connect OpenAI API key here to enable real ChatGPT replies.'}
+  chatInput.onkeydown=async e=>{
+    if(e.key==='Enter'){
+      const msg=chatInput.value;
+      chatBox.innerHTML+=`<div class='user'>${msg}</div>`;
+      const reply=await askAI(msg);
+      chatBox.innerHTML+=`<div class='bot'>${reply}</div>`;
+      chatInput.value=''; chatBox.scrollTop=chatBox.scrollHeight;
+    }
+  };
+</script>
+
+</body>
+</html>
